@@ -21,7 +21,7 @@
 It is used as a property of a reducer class that extends AbstractReducer.</p>
 <p>The type is a mapped type that iterates through each key of the generic type T
 and creates a property with that same key. The value of each property is a function type called ActionPayload,
-which takes an optional payload and returns an AnyAction.
+which takes an optional payload and returns an UnknownAction.
 The payload type is inferred from the second argument of the function type at that key in T.</p>
 
 <h3>Example</h3><pre><code class="language-typescript"><span class="hl-5">export</span><span class="hl-1"> </span><span class="hl-3">class</span><span class="hl-1"> </span><span class="hl-4">MyReducer</span><span class="hl-1"> </span><span class="hl-3">extends</span><span class="hl-1"> </span><span class="hl-4">AbstractReducer</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-3">static</span><span class="hl-1"> </span><span class="hl-2">actions</span><span class="hl-1">: </span><span class="hl-4">ReducerActions</span><span class="hl-1">&lt;</span><span class="hl-4">MyReducer</span><span class="hl-1">&gt; = {</span><br/><span class="hl-1">    </span><span class="hl-0">someReducerFunction</span><span class="hl-2">:</span><span class="hl-1"> (</span><span class="hl-2">payload</span><span class="hl-1">) </span><span class="hl-3">=&gt;</span><span class="hl-1"> ({</span><br/><span class="hl-1">      </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-8">&#39;SOME_ACTION&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">payload</span><span class="hl-1">,</span><br/><span class="hl-1">    }),</span><br/><span class="hl-1">  };</span><br/><br/><span class="hl-1">  </span><span class="hl-0">someReducerFunction</span><span class="hl-1">(</span><span class="hl-2">param1</span><span class="hl-1">: </span><span class="hl-4">string</span><span class="hl-1">, </span><span class="hl-2">param2</span><span class="hl-1">: </span><span class="hl-4">number</span><span class="hl-1">): </span><span class="hl-4">void</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-7">// Some reducer logic here</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
@@ -33,7 +33,7 @@ The payload type is inferred from the second argument of the function type at th
 <li>
 <h4>T</h4></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/angular-redux2/store/blob/aa07f76/projects/angular-redux2/store/src/interfaces/store.interface.ts#L157">projects/angular-redux2/store/src/interfaces/store.interface.ts:157</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/angular-redux3/store/blob/aa07f76/projects/angular-redux3/store/src/interfaces/store.interface.ts#L157">projects/angular-redux3/store/src/interfaces/store.interface.ts:157</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

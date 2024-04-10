@@ -115,7 +115,7 @@ export class MyReducer extends AbstractReducer {
 })
 export class MyComponent {
     @Dispatch()
-    onClick(): AnyAction {
+    onClick(): UnknownAction {
         // { type: 'ADD_ITEM', payload: { name: 'New Item' } }
         return MyReducer.actions.addItem({ name: 'New Item' });
     }

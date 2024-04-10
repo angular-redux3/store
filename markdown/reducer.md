@@ -67,7 +67,7 @@ You can still use the old way of writing reducers as a function that takes the c
 Here's an example of how you can write the authReducer using the old way:
 
 ```typescript
-import { AnyAction } from 'redux';
+import { UnknownAction } from 'redux';
 
 export interface AuthState {
     isLoggedIn: boolean;
@@ -77,7 +77,7 @@ export const initialState: AuthState = {
     isLoggedIn: false,
 };
 
-export function authReducer(state = initialState, action: AnyAction): AuthState {
+export function authReducer(state = initialState, action: UnknownAction): AuthState {
     switch (action.type) {
         case 'IS_LOGIN':
             state.isLoggedIn = !state.isLoggedIn
@@ -93,7 +93,7 @@ addBug(bug: Bug) {
 ```
 
 ## Draft state
-The "Draft State" pattern is a technique used in Angular-Redux2 to optimize state
+The "Draft State" pattern is a technique used in angular-redux3 to optimize state
 updates by copying only the changed parts of the state object instead of copying the entire object.
 
 Normally, when a state is updated in a reducer function,
@@ -106,13 +106,13 @@ This object is created as a copy of the current state object and is modified in 
 
 Here are some examples of how to use the Draft State pattern in a reducer function:
 ```typescript
-export function anyReducer(state = initialState, action: AnyAction): AuthState {
+export function anyReducer(state = initialState, action: UnknownAction): AuthState {
     state.user.push(action.user); // modifying the state object in place
 }
 ```
 
 ```typescript
-export function anyReducer(state = initialState, action: AnyAction): AuthState {
+export function anyReducer(state = initialState, action: UnknownAction): AuthState {
     return {
         ...state, // copying the entire state object
         name: 'x' // adding a new property
@@ -121,7 +121,7 @@ export function anyReducer(state = initialState, action: AnyAction): AuthState {
 ```
 
 ```typescript
-export function anyReducer(state = initialState, action: AnyAction): AuthState {
+export function anyReducer(state = initialState, action: UnknownAction): AuthState {
     return 'test'; // returning new state
 }
 ```

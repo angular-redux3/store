@@ -35,8 +35,8 @@ export class CounterComponent {
 }
 ```
 
-## Angular-redux2 select types
-In Angular-redux2, select is a method that retrieves a specific slice of the store state and returns it as an observable.
+## angular-redux3 select types
+In angular-redux3, select is a method that retrieves a specific slice of the store state and returns it as an observable.
 It accepts an optional selector function as its argument and returns an Observable of the selected state.
 The selector function can be of three types:
 

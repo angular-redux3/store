@@ -1,5 +1,5 @@
 # MockNgRedux 
-`MockNgRedux` is a utility class that makes it easier to write unit tests for Angular applications that rely on the `angular-redux2/store`.
+`MockNgRedux` is a utility class that makes it easier to write unit tests for Angular applications that rely on the `angular-redux3/store`.
 It provides a way to create mock sub-stores and selector stubs,
 allowing you to simulate different scenarios and verify the behavior of your components and services.
 

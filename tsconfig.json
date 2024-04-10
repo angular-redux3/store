@@ -26,10 +26,10 @@
         ],
         "paths": {
             "@angular-redux3/store": [
-                "./projects/angular-redux2/store/src/public-api",
+                "./projects/angular-redux3/store/src/public-api",
             ],
             "@angular-redux3/store/mocks": [
-                "./projects/angular-redux2/store/mocks/public-api",
+                "./projects/angular-redux3/store/mocks/public-api",
             ]
         }
     },

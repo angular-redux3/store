@@ -1,0 +1,39 @@
+{
+    "name": "@angular-redux3/store",
+    "author": "pakozlow",
+    "license": "Mozilla Public License Version 2.0",
+    "version": "17.0.0",
+    "homepage": "https://github.com/angular-redux3/store",
+    "description": "Angular bindings for Redux",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/angular-redux3/store.git"
+    },
+    "scripts": {
+        "test": "ng test @angular-redux3/store"
+    },
+    "bugs": {
+        "url": "https://github.com/angular-redux3/store/issues"
+    },
+    "keywords": [
+        "angular",
+        "angular2",
+        "angular3",
+        "redux",
+        "store",
+        "state management"
+    ],
+    "engines": {
+        "node": ">=16"
+    },
+    "peerDependencies": {
+        "rxjs": ">=7.8.0",
+        "redux": ">=5.0.0",
+        "@angular/core": ">=17.0.0",
+        "@angular/common": ">=17.0.0"
+    },
+    "dependencies": {
+        "tslib": "^2.3.0"
+    },
+    "sideEffects": false
+}
