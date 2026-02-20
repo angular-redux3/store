@@ -27,10 +27,10 @@
         "node": ">=16"
     },
     "peerDependencies": {
-        "rxjs": ">=7.5.0",
+        "rxjs": ">=7.8.0",
         "redux": ">=4.2.1",
-        "@angular/core": ">=17.0.0",
-        "@angular/common": ">=17.0.0"
+        "@angular/core": ">=20.0.0",
+        "@angular/common": ">=20.0.0"
     },
     "dependencies": {
         "tslib": "^2.3.0"
