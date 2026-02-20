@@ -6,6 +6,7 @@ module.exports = {
         '^@angular-redux3/store/mocks$': '<rootDir>/projects/angular-redux3/store/mocks/public-api.ts'
     },
     modulePathIgnorePatterns: ['<rootDir>/dist'],
+    setupFilesAfterEnv: ['<rootDir>/projects/angular-redux3/store/src/test-setup.ts'],
     globals: {
         'ts-jest': {
             diagnostics: false

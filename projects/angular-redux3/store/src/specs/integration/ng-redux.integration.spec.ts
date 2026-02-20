@@ -69,7 +69,7 @@ describe('NgRedux Observable Store', () => {
     test('Should throw when the store is configured twice.', () => {
         expect(
             ngRedux.configureStore.bind(ngRedux, rootReducer, defaultState)
-        ).toThrowError(Error);
+        ).toThrow(Error);
     });
 
     test('Should get the initial state.', (done) => {
@@ -94,7 +94,7 @@ describe('NgRedux Observable Store', () => {
         ngRedux.dispatch({ type: 'UPDATE_FOO', payload: 1 });
         ngRedux.select<any>('foo').subscribe(spy);
 
-        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
     });
 
     test('Should not trigger selector if that slice of state was changed.', () => {
@@ -105,14 +105,14 @@ describe('NgRedux Observable Store', () => {
         });
 
         const foo$ = ngRedux.select<any>('foo').subscribe(spy);
-        expect(spy).toBeCalled();
+        expect(spy).toHaveBeenCalled();
 
         ngRedux.dispatch({ type: 'UPDATE_BAR', payload: 0 });
-        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
         expect(fooData).toBe('bar');
 
         ngRedux.dispatch({ type: 'UPDATE_FOO', payload: 'changeFoo' });
-        expect(spy).toBeCalledTimes(2);
+        expect(spy).toHaveBeenCalledTimes(2);
         expect(fooData).toBe('changeFoo');
         foo$.unsubscribe();
     });
@@ -126,10 +126,10 @@ describe('NgRedux Observable Store', () => {
 
         const foo$ = ngRedux.select<any>('foo').subscribe(spy);
 
-        expect(spy).toBeCalled();
+        expect(spy).toHaveBeenCalled();
         expect(fooData).toBe('bar');
         ngRedux.dispatch({ type: 'UPDATE_FOO', payload: 'bar' });
-        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
         expect(fooData).toBe('bar');
         foo$.unsubscribe();
     });
@@ -143,23 +143,23 @@ describe('NgRedux Observable Store', () => {
 
         ngRedux.select<any>((state: any) => `${ state.foo }-${ state.baz }`).subscribe(spy);
 
-        expect(spy).toBeCalled();
+        expect(spy).toHaveBeenCalled();
         expect(fooData).toBe('bar--1');
 
-        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
         expect(fooData).toBe('bar--1');
 
         ngRedux.dispatch({ type: 'UPDATE_BAR', payload: 'bar' });
-        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
         expect(fooData).toBe('bar--1');
 
         ngRedux.dispatch({ type: 'UPDATE_FOO', payload: 'update' });
         expect(fooData).toBe('update--1');
-        expect(spy).toBeCalledTimes(2);
+        expect(spy).toHaveBeenCalledTimes(2);
 
         ngRedux.dispatch({ type: 'UPDATE_BAZ', payload: 2 });
         expect(fooData).toBe('update-2');
-        expect(spy).toBeCalledTimes(3);
+        expect(spy).toHaveBeenCalledTimes(3);
     });
 
     test('Should only call provided select function if state changed.', () => {
@@ -168,17 +168,17 @@ describe('NgRedux Observable Store', () => {
         ngRedux.select().subscribe(<any> selectSpy);
 
         // called once to get the initial value
-        expect(selectSpy).toBeCalledTimes(1);
+        expect(selectSpy).toHaveBeenCalledTimes(1);
 
         // not called since no state was updated
         ngRedux.dispatch({ type: 'NOT_A_STATE_CHANGE' });
-        expect(selectSpy).toBeCalledTimes(1);
+        expect(selectSpy).toHaveBeenCalledTimes(1);
 
         ngRedux.dispatch({ type: 'UPDATE_FOO', payload: 'update' });
-        expect(selectSpy).toBeCalledTimes(2);
+        expect(selectSpy).toHaveBeenCalledTimes(2);
 
         ngRedux.dispatch({ type: 'NOT_A_STATE_CHANGE' });
-        expect(selectSpy).toBeCalledTimes(2);
+        expect(selectSpy).toHaveBeenCalledTimes(2);
     });
 
     /**
@@ -187,7 +187,7 @@ describe('NgRedux Observable Store', () => {
      */
 
     test('Should throw if store is provided after it has been configured.', () => {
-        expect(ngRedux.provideStore.bind(store)).toThrowError();
+        expect(ngRedux.provideStore.bind(store)).toThrow();
     });
 
     test('Should wait until store is configured before emitting values.', () => {
@@ -293,14 +293,14 @@ describe('Chained actions in subscriptions', () => {
             const lenSub = length$.subscribe(lengthSpy);
             const keywordSub = keyword$.subscribe(keywordSpy);
 
-            expect(lengthSpy).toBeCalledWith(-1);
-            expect(keywordSpy).toBeCalledWith('');
+            expect(lengthSpy).toHaveBeenCalledWith(-1);
+            expect(keywordSpy).toHaveBeenCalledWith('');
 
             doSearch('test');
             doFetch('test');
 
-            expect(lengthSpy).toBeCalledWith(4);
-            expect(keywordSpy).toBeCalledWith('test');
+            expect(lengthSpy).toHaveBeenCalledWith(4);
+            expect(keywordSpy).toHaveBeenCalledWith('test');
 
             keywordSub.unsubscribe();
             lenSub.unsubscribe();

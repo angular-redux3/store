@@ -471,6 +471,6 @@ describe('NgRedux Sub-store functional', () => {
         expect(subSubStore.getState()).toEqual({ level4: 3 });
         subSubStore.dispatch<AnyAction>({ type: 'MY_ACTION' });
 
-        expect(defaultReducer).toBeCalled();
+        expect(defaultReducer).toHaveBeenCalled();
     });
 });
