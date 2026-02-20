@@ -1,12 +1,12 @@
-# Quickstart guide for Angular-Redux2
-Angular-Redux2 is a state management library for Angular applications that uses Redux as 
+# Quickstart guide for angular-redux3
+angular-redux3 is a state management library for Angular applications that uses Redux as 
 its underlying architecture. It provides an easy way to manage state in complex applications and 
 allows for easy debugging and testing of state changes.
 
-This quickstart guide will walk you through the basic steps of setting up Angular-Redux2 in your Angular application.
+This quickstart guide will walk you through the basic steps of setting up angular-redux3 in your Angular application.
 
 ## Installation
-To install Angular-Redux2, you can use npm or yarn:
+To install angular-redux3, you can use npm or yarn:
 
 ```bash
 npm install @angular-redux3/store redux
@@ -151,10 +151,10 @@ export class AppComponent {
 }
 ```
 
-That's it! You should now be able to use Angular-Redux2 in your Angular application.
+That's it! You should now be able to use angular-redux3 in your Angular application.
 
 ## Conclusion
-Angular-Redux2 provides a powerful and flexible way to manage state in Angular applications.
+angular-redux3 provides a powerful and flexible way to manage state in Angular applications.
 By following this quickstart guide, you should now have a basic understanding of how to 
-set up Angular-Redux2 in your application.
+set up angular-redux3 in your application.
 For more advanced usage, please refer to the documentation.

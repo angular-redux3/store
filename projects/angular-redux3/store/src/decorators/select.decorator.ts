@@ -11,13 +11,13 @@ import { distinctUntilChanged } from 'rxjs';
 import { Observable } from 'rxjs';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { DecoratorFlagComponent } from '../components/decorator-flag.component';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import { Transformer } from '../interfaces/store.interface';

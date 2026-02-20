@@ -14,7 +14,7 @@ import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { NgRedux } from '@angular-redux3/store';

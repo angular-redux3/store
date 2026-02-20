@@ -32,8 +32,8 @@ with substore => Substore, dispatch => Dispatch etc.
 
 ## Plugins
 
-- [Undo](https://github.com/angular-redux2/undo).
-- [Sync](https://github.com/angular-redux2/sync).
+- [Undo](https://github.com/angular-redux3/undo).
+- [Sync](https://github.com/angular-redux3/sync).
 
 ## Resources
 

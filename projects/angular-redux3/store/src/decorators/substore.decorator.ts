@@ -5,7 +5,7 @@
 import { AnyAction, Reducer } from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { LOCAL_REDUCER_KEY } from '../interfaces/fractal.interface';

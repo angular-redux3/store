@@ -5,14 +5,14 @@
 import type {AnyAction, Reducer} from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import {ACTION_KEY} from '../interfaces/fractal.interface';
 import {get, set, shallowCopy} from '../components/object.component';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import type {Middleware, NextMiddleware} from '../interfaces/reducer.interface';

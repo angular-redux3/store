@@ -1,12 +1,12 @@
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { ReducerService } from './reducer.service';
 import { ACTION_KEY } from '../interfaces/fractal.interface';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import type { Middleware } from '@angular-redux3/store';

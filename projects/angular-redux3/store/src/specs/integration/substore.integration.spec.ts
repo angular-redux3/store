@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 import { Action, AnyAction } from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { NgRedux } from '../../services/ng-redux.service';
@@ -23,7 +23,7 @@ import { ACTION_KEY } from '../../interfaces/fractal.interface';
 import { Select, Select$ } from '../../decorators/select.decorator';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import { PathSelector } from '../../interfaces/store.interface';

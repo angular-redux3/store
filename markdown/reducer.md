@@ -93,7 +93,7 @@ addBug(bug: Bug) {
 ```
 
 ## Draft state
-The "Draft State" pattern is a technique used in Angular-Redux2 to optimize state
+The "Draft State" pattern is a technique used in angular-redux3 to optimize state
 updates by copying only the changed parts of the state object instead of copying the entire object.
 
 Normally, when a state is updated in a reducer function,

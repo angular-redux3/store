@@ -51,9 +51,9 @@ This function *takes one or more middleware* functions as arguments and returns 
 > To dispatch additional actions, call `store.dispatch` within the middleware function.
 
 # Reducer middleware
-Angular-redux2 Middleware is a function that sits between reducers in the `Angular-redux2/store` data flow process.
+angular-redux3 Middleware is a function that sits between reducers in the `angular-redux3/store` data flow process.
 Its purpose is to intercept and process actions reducers.
-To use middleware, you must first define a middleware function that conforms to the `Angular-redux2/store` middleware API.
+To use middleware, you must first define a middleware function that conforms to the `angular-redux3/store` middleware API.
 Here is an example of how to define and use middleware in an application:
 
 ```typescript

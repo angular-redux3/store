@@ -1,5 +1,5 @@
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { DecoratorFlagComponent } from '../components/decorator-flag.component';

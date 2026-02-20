@@ -11,7 +11,7 @@ import { NgZone } from '@angular/core';
 import { Reducer, Action, AnyAction } from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { NgRedux } from '../../services/ng-redux.service';

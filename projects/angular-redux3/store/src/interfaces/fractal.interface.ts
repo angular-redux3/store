@@ -1,5 +1,5 @@
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import { AbstractStore } from '../abstract/store.abstract';

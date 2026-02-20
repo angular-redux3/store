@@ -1,5 +1,5 @@
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { NgRedux } from '../services/ng-redux.service';

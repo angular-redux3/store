@@ -5,7 +5,7 @@
 import { Subject } from 'rxjs';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import { Comparator } from '@angular-redux3/store';

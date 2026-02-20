@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { AnyAction, Reducer } from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { ReducerService } from './reducer.service';
@@ -15,7 +15,7 @@ import { AbstractStore } from '../abstract/store.abstract';
 import { ACTION_KEY } from '../interfaces/fractal.interface';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import { NgRedux } from './ng-redux.service';

@@ -12,7 +12,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { AnyAction, Reducer, Store, StoreEnhancer, Unsubscribe } from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { ReducerService } from './reducer.service';
@@ -20,7 +20,7 @@ import { SubStoreService } from './sub-store.service';
 import { AbstractStore } from '../abstract/store.abstract';
 
 /**
- * angular-redux2 types
+ * angular-redux3 types
  */
 
 import { Middleware } from '../interfaces/reducer.interface';

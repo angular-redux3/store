@@ -13,7 +13,7 @@ import { ApplicationRef } from '@angular/core';
 import { Unsubscribe } from 'redux';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { NgRedux } from './ng-redux.service';

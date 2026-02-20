@@ -5,7 +5,7 @@
 import { NgModule } from '@angular/core';
 
 /**
- * angular-redux2
+ * angular-redux3
  */
 
 import { NgRedux, DevToolsExtension } from '@angular-redux3/store';
