@@ -1,5 +1,5 @@
 # How to use sub-sore
-SubStore in Angular-Redux2 allows you to carve off a sub-store from a parent store.
+SubStore in angular-redux3 allows you to carve off a sub-store from a parent store.
 This sub-store has its own base path and local reducer.
 The returned object is an observable store that is specific to that sub-store and will not know about the parent store.
 
@@ -53,7 +53,7 @@ export class MyComponent {
 ```
 
 # How to use `Substore` decorators
-Substore is a decorator function in the angular-redux2 library that allows you to create and operate on a substore with a given reducer.
+Substore is a decorator function in the angular-redux3 library that allows you to create and operate on a substore with a given reducer.
 A substore is a subset of the global store that is created using a specific reducer, and it allows you to isolate and manage specific parts of the state tree.
 
 Here's an example of how to use the Substore decorator:
