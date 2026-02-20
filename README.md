@@ -10,8 +10,14 @@ It provides a set of services and decorators that make it easy to manage your ap
 [![npm version](https://img.shields.io/npm/v/@angular-redux3/store.svg)](https://www.npmjs.com/package/@angular-redux3/store)
 [![downloads per month](https://img.shields.io/npm/dm/@angular-redux3/store.svg)](https://www.npmjs.com/package/@angular-redux3/store)
 
-## support 
-We currently provide support for `Angular` version `17` as well as `Redux` version `4.2.1` and `RxJS` version `7.8.0`.
+## Support
+We currently provide support for the following runtime/tooling versions:
+
+- **Angular:** `21.x`
+- **Redux:** `4.2.1`
+- **RxJS:** `^6.5.3` or `^7.4.0`
+- **TypeScript:** `>=5.9.0 <6.0.0`
+- **Node.js:** `20.19.0`, `22.12.0`, or `24.0.0`
 
 ## Changes from @angular-redux/store
 
