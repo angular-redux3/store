@@ -57,7 +57,7 @@ describe('Test auto generate action struct.', () => {
             assign: 'test'
         }));
 
-        expect(addBugSpy).toBeCalledWith([{ name: 'x' }], {
+        expect(addBugSpy).toHaveBeenCalledWith([{ name: 'x' }], {
             assign: 'test'
         });
     });

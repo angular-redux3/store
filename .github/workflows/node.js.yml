@@ -16,13 +16,14 @@ jobs:
 
         strategy:
             matrix:
-                node: [ 18, 20 ]
+                # Use Node versions compatible with Angular 21 per compatibility matrix
+                node: [ '20.19.x', '22.12.x', '24.x' ]
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         name: Node ${{ matrix.node }}
         steps:
             -   uses: actions/checkout@v3
-            -   name: Use Node.js ${{ matrix.node-version }}
+            -   name: Use Node.js ${{ matrix.node }}
                 uses: actions/setup-node@v3
                 with:
                     node-version: ${{ matrix.node }}

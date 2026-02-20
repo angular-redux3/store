@@ -61,7 +61,7 @@ test('Should dispatch action by reducer class method.', () => {
         name: 'test2'
     }));
 
-    expect(authIsLoginSpy).toBeCalledWith({}, {
+    expect(authIsLoginSpy).toHaveBeenCalledWith({}, {
         name: 'test2'
     });
 });
@@ -72,6 +72,6 @@ test('Should reducer class ignore different namespace dispatch.', () => {
         name: 'test2'
     }));
 
-    expect(authIsLoginSpy).not.toBeCalled();
-    expect(userIsLoginSpy).not.toBeCalled();
+    expect(authIsLoginSpy).not.toHaveBeenCalled();
+    expect(userIsLoginSpy).not.toHaveBeenCalled();
 });
