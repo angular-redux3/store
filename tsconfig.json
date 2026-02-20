@@ -6,7 +6,7 @@
         "target": "ES2022",
         "module": "ES2022",
         "outDir": "./dist/out-tsc",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "strict": true,
         "sourceMap": true,
         "declaration": false,
