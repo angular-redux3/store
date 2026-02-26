@@ -30,9 +30,9 @@ describe('ComponentStoreSlice', () => {
     ) => {
         switch (action.type) {
             case 'SET_VALUE':
-                return { ...state, value: action.payload };
+                return { ...state, value: action['payload'] };
             case 'SET_LABEL':
-                return { ...state, label: action.payload };
+                return { ...state, label: action['payload'] };
             default:
                 return state;
         }
@@ -44,7 +44,7 @@ describe('ComponentStoreSlice', () => {
     ) => {
         if (action.type?.startsWith('@@COMPONENT_STORE/INIT/')) {
             const key = action.type.replace('@@COMPONENT_STORE/INIT/', '');
-            return { ...state, [key]: action.payload };
+            return { ...state, [key]: action['payload'] };
         }
         return state;
     };

@@ -12,7 +12,7 @@ describe('rxEffect', () => {
         ReducerService.reset();
         store = new NgRedux<any>(undefined);
         const reducer = (state: any = { value: 0 }, action: AnyAction) => {
-            if (action.type === 'SET_VALUE') return { ...state, value: action.payload };
+            if (action.type === 'SET_VALUE') return { ...state, value: action['payload'] };
             return state;
         };
         store.configureStore(reducer, { value: 0 });
@@ -96,7 +96,7 @@ describe('rxActionEffect', () => {
         ReducerService.reset();
         store = new NgRedux<any>(undefined);
         const reducer = (state: any = { value: 0 }, action: AnyAction) => {
-            if (action.type === 'SET_VALUE') return { ...state, value: action.payload };
+            if (action.type === 'SET_VALUE') return { ...state, value: action['payload'] };
             if (action.type === 'VALUE_SET') return { ...state, confirmed: true };
             return state;
         };
@@ -122,7 +122,7 @@ describe('rxActionEffect', () => {
             ['SET_VALUE'],
             (action) => {
                 expect(action.type).toBe('SET_VALUE');
-                expect(action.payload).toBe(99);
+                expect(action['payload']).toBe(99);
                 effectRef.destroy();
                 done();
                 return EMPTY;

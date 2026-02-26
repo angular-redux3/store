@@ -21,9 +21,9 @@ describe('Test Utilities', () => {
             case 'INCREMENT':
                 return { ...state, count: state.count + 1 };
             case 'SET_NAME':
-                return { ...state, name: action.payload };
+                return { ...state, name: action['payload'] };
             case '@@TEST/SET_STATE':
-                return action.payload;
+                return action['payload'];
             default:
                 return state;
         }

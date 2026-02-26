@@ -26,9 +26,18 @@ describe('isZoneless()', () => {
     });
 
     test('should return true when ngZone is NoopNgZone', () => {
-        // Simulate NoopNgZone
-        class NoopNgZone {}
-        const noop = new NoopNgZone() as any;
+        // Simulate NoopNgZone with the behavioral properties that isZoneless checks
+        const noop = {
+            isStable: true,
+            hasPendingMicrotasks: false,
+            hasPendingMacrotasks: false,
+            run: (fn: Function) => fn(),
+            runOutsideAngular: (fn: Function) => fn(),
+            onUnstable: { subscribe: () => {} },
+            onMicrotaskEmpty: { subscribe: () => {} },
+            onStable: { subscribe: () => {} },
+            onError: { subscribe: () => {} },
+        } as any;
         expect(isZoneless(noop)).toBe(true);
     });
 
@@ -48,10 +57,12 @@ describe('ChangeDetectionNotifier implementations', () => {
         expect(() => notifier.notify()).not.toThrow();
     });
 
-    test('ZonelessChangeDetectionNotifier.notify() should call appRef.tick()', () => {
+    test('ZonelessChangeDetectionNotifier.notify() should call appRef.tick() (coalesced)', async () => {
         const mockAppRef = { tick: jest.fn() } as unknown as ApplicationRef;
         const notifier = new ZonelessChangeDetectionNotifier(mockAppRef);
         notifier.notify();
+        // tick is coalesced via queueMicrotask — flush
+        await Promise.resolve();
         expect(mockAppRef.tick).toHaveBeenCalledTimes(1);
     });
 
@@ -95,9 +106,19 @@ describe('NgRedux — zone/zoneless auto-detection', () => {
         expect(store.getState().counter).toBe(1);
     });
 
-    test('should be in zoneless mode when NoopNgZone is provided', () => {
-        class NoopNgZone {}
-        const noopZone = new NoopNgZone() as any as NgZone;
+    test('should be in zoneless mode when NoopNgZone is provided', async () => {
+        // Simulate NoopNgZone with behavioral properties for production-safe detection
+        const noopZone = {
+            isStable: true,
+            hasPendingMicrotasks: false,
+            hasPendingMacrotasks: false,
+            run: (fn: Function) => fn(),
+            runOutsideAngular: (fn: Function) => fn(),
+            onUnstable: { subscribe: () => {} },
+            onMicrotaskEmpty: { subscribe: () => {} },
+            onStable: { subscribe: () => {} },
+            onError: { subscribe: () => {} },
+        } as any as NgZone;
         const mockAppRef = { tick: jest.fn() } as unknown as ApplicationRef;
 
         ReducerService.reset();
@@ -109,6 +130,8 @@ describe('NgRedux — zone/zoneless auto-detection', () => {
 
         store.dispatch({ type: 'INCREMENT' });
         expect(store.getState().counter).toBe(1);
+        // tick is coalesced via queueMicrotask
+        await Promise.resolve();
         expect(mockAppRef.tick).toHaveBeenCalled();
     });
 
@@ -186,12 +209,14 @@ describe('ZonelessNgRedux', () => {
         expect(ngRedux.getState().counter).toBe(1);
     });
 
-    test('Should call ApplicationRef.tick when strategy is tick.', () => {
+    test('Should call ApplicationRef.tick when strategy is tick.', async () => {
         const mockAppRef = { tick: jest.fn() } as unknown as ApplicationRef;
         ngRedux.configureZoneless(mockAppRef, 'tick');
 
         ngRedux.dispatch({ type: 'INCREMENT' });
 
+        // tick is coalesced via queueMicrotask
+        await Promise.resolve();
         expect(mockAppRef.tick).toHaveBeenCalledTimes(1);
     });
 
@@ -231,7 +256,7 @@ describe('ZonelessNgRedux', () => {
         expect(values).toEqual([0, 1, 2]);
     });
 
-    test('should force zoneless even when a real NgZone is provided', () => {
+    test('should force zoneless even when a real NgZone is provided', async () => {
         class RealNgZone { run(fn: () => any) { return fn(); } }
         const zone = new RealNgZone() as any as NgZone;
         const mockAppRef = { tick: jest.fn() } as unknown as ApplicationRef;
@@ -242,6 +267,8 @@ describe('ZonelessNgRedux', () => {
 
         expect(store['_isZoneless']).toBe(true);
         store.dispatch({ type: 'INCREMENT' });
+        // tick is coalesced via queueMicrotask
+        await Promise.resolve();
         expect(mockAppRef.tick).toHaveBeenCalled();
     });
 });

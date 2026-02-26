@@ -22,17 +22,22 @@
  * const completed$ = store.select(selectCompletedTodos);
  * ```
  */
+export type MemoizedSelector<S, Result> = ((state: S) => Result) & {
+    release: () => void;
+    recomputations: () => number;
+};
+
 export function createSelector<S, R1, Result>(
     s1: (state: S) => R1,
     resultFn: (r1: R1) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 2 input selectors. */
 export function createSelector<S, R1, R2, Result>(
     s1: (state: S) => R1,
     s2: (state: S) => R2,
     resultFn: (r1: R1, r2: R2) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 3 input selectors. */
 export function createSelector<S, R1, R2, R3, Result>(
@@ -40,7 +45,7 @@ export function createSelector<S, R1, R2, R3, Result>(
     s2: (state: S) => R2,
     s3: (state: S) => R3,
     resultFn: (r1: R1, r2: R2, r3: R3) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 4 input selectors. */
 export function createSelector<S, R1, R2, R3, R4, Result>(
@@ -49,7 +54,7 @@ export function createSelector<S, R1, R2, R3, R4, Result>(
     s3: (state: S) => R3,
     s4: (state: S) => R4,
     resultFn: (r1: R1, r2: R2, r3: R3, r4: R4) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 5 input selectors. */
 export function createSelector<S, R1, R2, R3, R4, R5, Result>(
@@ -59,7 +64,7 @@ export function createSelector<S, R1, R2, R3, R4, R5, Result>(
     s4: (state: S) => R4,
     s5: (state: S) => R5,
     resultFn: (r1: R1, r2: R2, r3: R3, r4: R4, r5: R5) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 6 input selectors. */
 export function createSelector<S, R1, R2, R3, R4, R5, R6, Result>(
@@ -70,7 +75,7 @@ export function createSelector<S, R1, R2, R3, R4, R5, R6, Result>(
     s5: (state: S) => R5,
     s6: (state: S) => R6,
     resultFn: (r1: R1, r2: R2, r3: R3, r4: R4, r5: R5, r6: R6) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 7 input selectors. */
 export function createSelector<S, R1, R2, R3, R4, R5, R6, R7, Result>(
@@ -82,7 +87,7 @@ export function createSelector<S, R1, R2, R3, R4, R5, R6, R7, Result>(
     s6: (state: S) => R6,
     s7: (state: S) => R7,
     resultFn: (r1: R1, r2: R2, r3: R3, r4: R4, r5: R5, r6: R6, r7: R7) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /** Creates a memoized selector from 8 input selectors. */
 export function createSelector<S, R1, R2, R3, R4, R5, R6, R7, R8, Result>(
@@ -95,7 +100,7 @@ export function createSelector<S, R1, R2, R3, R4, R5, R6, R7, R8, Result>(
     s7: (state: S) => R7,
     s8: (state: S) => R8,
     resultFn: (r1: R1, r2: R2, r3: R3, r4: R4, r5: R5, r6: R6, r7: R7, r8: R8) => Result,
-): (state: S) => Result;
+): MemoizedSelector<S, Result>;
 
 /**
  * Implementation of createSelector with memoization.

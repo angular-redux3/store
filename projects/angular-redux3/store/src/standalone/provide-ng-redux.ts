@@ -8,7 +8,7 @@
  * the zone mode and configures the appropriate change detection strategy.
  */
 
-import { Provider, makeEnvironmentProviders, EnvironmentProviders, NgZone, APP_INITIALIZER, ApplicationRef } from '@angular/core';
+import { Provider, makeEnvironmentProviders, EnvironmentProviders, NgZone, ApplicationRef, inject, provideAppInitializer } from '@angular/core';
 import { Reducer, StoreEnhancer } from 'redux';
 
 import { NgRedux, CHANGE_DETECTION_NOTIFIER, ChangeDetectionNotifier, NoopChangeDetectionNotifier } from '../services/ng-redux.service';
@@ -68,28 +68,23 @@ export function provideNgRedux<RootState>(config: NgReduxConfig<RootState>): Env
     const providers: any[] = [
         NgRedux,
         DevToolsExtension,
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useFactory: (ngRedux: NgRedux<RootState>) => {
-                return () => {
-                    // Apply custom CD notifier if provided
-                    if (config.changeDetection === 'noop') {
-                        ngRedux.setNotifier(new NoopChangeDetectionNotifier());
-                    } else if (config.changeDetection && config.changeDetection !== 'auto') {
-                        ngRedux.setNotifier(config.changeDetection as ChangeDetectionNotifier);
-                    }
+        provideAppInitializer(() => {
+            const ngRedux = inject(NgRedux) as NgRedux<RootState>;
 
-                    ngRedux.configureStore(
-                        config.reducer,
-                        config.initialState,
-                        config.middleware ?? [],
-                        config.enhancers ?? []
-                    );
-                };
-            },
-            deps: [NgRedux],
-        },
+            // Apply custom CD notifier if provided
+            if (config.changeDetection === 'noop') {
+                ngRedux.setNotifier(new NoopChangeDetectionNotifier());
+            } else if (config.changeDetection && config.changeDetection !== 'auto') {
+                ngRedux.setNotifier(config.changeDetection as ChangeDetectionNotifier);
+            }
+
+            ngRedux.configureStore(
+                config.reducer,
+                config.initialState,
+                config.middleware ?? [],
+                config.enhancers ?? []
+            );
+        }),
     ];
 
     return makeEnvironmentProviders(providers);

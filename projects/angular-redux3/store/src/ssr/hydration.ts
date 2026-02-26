@@ -10,11 +10,12 @@ import {
     InjectionToken,
     makeEnvironmentProviders,
     EnvironmentProviders,
-    APP_INITIALIZER,
     PLATFORM_ID,
     TransferState,
     StateKey,
     makeStateKey,
+    inject,
+    provideAppInitializer,
 } from '@angular/core';
 import { isPlatformServer, isPlatformBrowser } from '@angular/common';
 import { Reducer, StoreEnhancer } from 'redux';
@@ -120,41 +121,34 @@ export function provideNgReduxHydration<RootState>(
     return makeEnvironmentProviders([
         NgRedux,
         DevToolsExtension,
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useFactory: (
-                ngRedux: NgRedux<RootState>,
-                platformId: object,
-                transferState: TransferState,
-            ) => {
-                return () => {
-                    let initialState = config.initialState;
+        provideAppInitializer(() => {
+            const ngRedux = inject(NgRedux) as NgRedux<RootState>;
+            const platformId = inject(PLATFORM_ID);
+            const transferState = inject(TransferState);
 
-                    // On the browser, try to rehydrate from TransferState
-                    if (isPlatformBrowser(platformId)) {
-                        const serialized = transferState.get(REDUX_STATE_KEY, null as any);
-                        if (serialized) {
-                            initialState = rehydrateState(serialized, config.initialState, config.deserializer);
-                            transferState.remove(REDUX_STATE_KEY);
-                        }
-                    }
+            let initialState = config.initialState;
 
-                    ngRedux.configureStore(
-                        config.reducer,
-                        initialState,
-                        config.middleware ?? [],
-                        config.enhancers ?? []
-                    );
+            // On the browser, try to rehydrate from TransferState
+            if (isPlatformBrowser(platformId)) {
+                const serialized = transferState.get(REDUX_STATE_KEY, null as any);
+                if (serialized) {
+                    initialState = rehydrateState(serialized, config.initialState, config.deserializer);
+                    transferState.remove(REDUX_STATE_KEY);
+                }
+            }
 
-                    // On the server, serialize state into TransferState after init
-                    if (isPlatformServer(platformId)) {
-                        const serialized = serializeStore(ngRedux, config.serializer);
-                        transferState.set(REDUX_STATE_KEY, serialized);
-                    }
-                };
-            },
-            deps: [NgRedux, PLATFORM_ID, TransferState],
-        },
+            ngRedux.configureStore(
+                config.reducer,
+                initialState,
+                config.middleware ?? [],
+                config.enhancers ?? []
+            );
+
+            // On the server, serialize state into TransferState after init
+            if (isPlatformServer(platformId)) {
+                const serialized = serializeStore(ngRedux, config.serializer);
+                transferState.set(REDUX_STATE_KEY, serialized);
+            }
+        }),
     ]);
 }

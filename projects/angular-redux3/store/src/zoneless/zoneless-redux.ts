@@ -19,7 +19,8 @@ import {
     Inject,
     makeEnvironmentProviders,
     EnvironmentProviders,
-    APP_INITIALIZER,
+    inject,
+    provideAppInitializer,
 } from '@angular/core';
 import { Reducer, StoreEnhancer } from 'redux';
 
@@ -148,23 +149,19 @@ export function provideNgReduxZoneless<RootState>(config: ZonelessNgReduxConfig<
             useClass: ZonelessNgRedux,
         },
         DevToolsExtension,
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useFactory: (ngRedux: NgRedux<RootState>, appRef: ApplicationRef) => {
-                return () => {
-                    if (ngRedux instanceof ZonelessNgRedux) {
-                        ngRedux.configureZoneless(appRef, config.changeDetection ?? 'tick');
-                    }
-                    ngRedux.configureStore(
-                        config.reducer,
-                        config.initialState,
-                        config.middleware ?? [],
-                        config.enhancers ?? []
-                    );
-                };
-            },
-            deps: [NgRedux, ApplicationRef],
-        },
+        provideAppInitializer(() => {
+            const ngRedux = inject(NgRedux) as NgRedux<RootState>;
+            const appRef = inject(ApplicationRef);
+
+            if (ngRedux instanceof ZonelessNgRedux) {
+                ngRedux.configureZoneless(appRef, config.changeDetection ?? 'tick');
+            }
+            ngRedux.configureStore(
+                config.reducer,
+                config.initialState,
+                config.middleware ?? [],
+                config.enhancers ?? []
+            );
+        }),
     ]);
 }

@@ -30,14 +30,67 @@ import {ReplaySubject} from "rxjs";
 /**
  * Determines whether the current Angular application is running in zone-less mode.
  * Returns true if NgZone is absent, is NoopNgZone, or Zone.js is not loaded globally.
+ *
+ * Detection strategy (production-safe — does NOT rely on constructor.name which
+ * gets mangled by minifiers):
+ * 1. No NgZone injected at all → zoneless.
+ * 2. Behavioral check: NoopNgZone is a trivial implementation whose `run`
+ *    method simply invokes the callback. We detect this by inspecting the
+ *    runtime behaviour of `ngZone.run`. Angular's real NgZone.run enters the
+ *    Angular zone (via Zone.js), which adds overhead; NoopNgZone.run is a
+ *    thin passthrough. We check the internal flags `hasPendingMicrotasks`,
+ *    `hasPendingMacrotasks`, and test if `run` is the trivial identity form.
+ * 3. Fallback: Zone.js global is not loaded → zoneless.
  */
 export function isZoneless(ngZone?: NgZone | null): boolean {
     if (!ngZone) return true;
-    // Angular provides NoopNgZone when zone-less. The class name check is the
-    // most reliable heuristic because NoopNgZone is not publicly exported.
-    if (ngZone.constructor?.name === 'NoopNgZone') return true;
-    // Fallback: check if Zone.js global is present
+
+    // Fallback: check if Zone.js global is present at all.
+    // Without Zone.js the standard NgZone cannot function.
     if (typeof (globalThis as any)['Zone'] === 'undefined') return true;
+
+    // Behavioral detection: Angular's NoopNgZone has a trivial `run` method
+    // that simply invokes the callback. Detect this by checking:
+    // - `hasPendingMicrotasks` and `hasPendingMacrotasks` are always false
+    // - `isStable` is always true
+    // - `onMicrotaskEmpty`, `onStable`, `onUnstable`, `onError` are unset/empty
+    // These properties distinguish NoopNgZone from a real NgZone.
+    try {
+        // A real NgZone will have onUnstable/onStable/onMicrotaskEmpty as
+        // EventEmitters that can have subscribers; NoopNgZone initializes them
+        // but never emits. The simplest reliable check: real NgZone sets
+        // `isStable` reactively based on zone activity, while NoopNgZone
+        // hardcodes it to true. We combine this with a run-identity check.
+        let sentinel = false;
+        ngZone.run(() => { sentinel = true; });
+        // If run didn't execute synchronously, this isn't a standard noop
+        if (!sentinel) return false;
+
+        // Now check if the zone's `runOutsideAngular` also acts as identity
+        let outerSentinel = false;
+        ngZone.runOutsideAngular(() => { outerSentinel = true; });
+        if (!outerSentinel) return false;
+
+        // Check NoopNgZone characteristic: hasPendingMicrotasks is always false
+        if ((ngZone as any).hasPendingMicrotasks === false &&
+            (ngZone as any).hasPendingMacrotasks === false &&
+            ngZone.isStable === true) {
+            // Very likely a NoopNgZone — but a real NgZone at rest also has
+            // these values. The distinguishing factor: real NgZone's `run`
+            // method uses Zone.js zone.run() internally. We check if the run
+            // method's source code references Zone (works in dev; in prod the
+            // constructor.name check fails but this code path still helps).
+            const runStr = ngZone.run.toString();
+            // NoopNgZone.run is typically: run(fn, applyThis, applyArgs) { return fn(...) }
+            // Real NgZone.run references this.inner.run or _inner.run
+            if (!runStr.includes('inner') && !runStr.includes('_inner') && !runStr.includes('Zone')) {
+                return true;
+            }
+        }
+    } catch {
+        // Swallow — fall through.
+    }
+
     return false;
 }
 
@@ -75,11 +128,24 @@ export class ZoneChangeDetectionNotifier implements ChangeDetectionNotifier {
 /**
  * Zoneless notifier: calls ApplicationRef.tick() to trigger change detection
  * without relying on Zone.js.
+ *
+ * Uses microtask coalescing so that multiple rapid dispatches within the same
+ * execution context are batched into a single ApplicationRef.tick() call.
+ * This prevents expensive full-tree change detection on every individual dispatch.
  */
 export class ZonelessChangeDetectionNotifier implements ChangeDetectionNotifier {
+    private _pending = false;
+
     constructor(private appRef: ApplicationRef) {}
+
     notify(): void {
-        this.appRef.tick();
+        if (!this._pending) {
+            this._pending = true;
+            queueMicrotask(() => {
+                this._pending = false;
+                this.appRef.tick();
+            });
+        }
     }
 }
 
