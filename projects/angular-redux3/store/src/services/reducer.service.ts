@@ -92,6 +92,17 @@ export class ReducerService {
     }
 
     /**
+     * Resets the singleton instance.
+     * Useful in testing to ensure a clean state between test suites.
+     *
+     * @returns {void}
+     */
+
+    static reset(): void {
+        ReducerService.instance = undefined as any;
+    }
+
+    /**
      * Composes multiple reducers into a single reducer function and applies middleware to it.
      *
      * @param {Reducer} rootReducer - The root reducer function to compose.
@@ -180,9 +191,47 @@ export class ReducerService {
         }
     }
 
+    /**
+     * Unregisters a sub-reducer by its hash signature.
+     * This allows sub-reducers to be cleaned up when components/modules are destroyed,
+     * preventing memory leaks in long-running applications.
+     *
+     * @param {number} hashReducer - The hash signature of the sub-reducer to unregister.
+     * @returns {boolean} Whether the sub-reducer was found and removed.
+     */
+
+    unregisterSubReducer(hashReducer: number): boolean {
+        if (this.mapSubReducers[hashReducer]) {
+            delete this.mapSubReducers[hashReducer];
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the count of currently registered sub-reducers.
+     * Useful for debugging and monitoring.
+     *
+     * @returns {number} The number of registered sub-reducers.
+     */
+
+    getSubReducerCount(): number {
+        return Object.keys(this.mapSubReducers).length;
+    }
+
     private static shouldCreateProxyForProperty(property: any): boolean {
         return property != null
             && !(property instanceof Date)
+            && !(property instanceof RegExp)
+            && !(property instanceof Map)
+            && !(property instanceof Set)
+            && !(property instanceof WeakMap)
+            && !(property instanceof WeakSet)
+            && !(property instanceof ArrayBuffer)
+            && !(typeof SharedArrayBuffer !== 'undefined' && property instanceof SharedArrayBuffer)
+            && !ArrayBuffer.isView(property)
+            && !(property instanceof Error)
+            && !(property instanceof Promise)
             && typeof property === 'object'
             && !property._isProxy;
     }
@@ -308,7 +357,7 @@ export class ReducerService {
 
                 return Reflect.get(target, prop, receiver);
             },
-            set(target: any, prop: string | symbol, value: any, receiver: any): any {
+            set(target: any, prop: string | symbol, value: any, _receiver: any): boolean {
                 if (prop === 'length') {
                     return true;
                 }
@@ -320,7 +369,8 @@ export class ReducerService {
                 const parent = get(state, stack);
                 parent[lastObject] = shallowCopy(parent[lastObject]);
 
-                return Reflect.set(parent[lastObject], prop, value, receiver);
+                parent[lastObject][prop] = value;
+                return true;
             },
         });
 

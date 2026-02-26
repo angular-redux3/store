@@ -3,7 +3,7 @@
  */
 
 import { compose, createStore } from 'redux';
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, ApplicationRef, InjectionToken, Optional, Inject } from '@angular/core';
 
 /**
  * Import third-party types
@@ -26,6 +26,70 @@ import { AbstractStore } from '../abstract/store.abstract';
 import { Middleware } from '../interfaces/reducer.interface';
 import { PathSelector } from '../interfaces/store.interface';
 import {ReplaySubject} from "rxjs";
+
+/**
+ * Determines whether the current Angular application is running in zone-less mode.
+ * Returns true if NgZone is absent, is NoopNgZone, or Zone.js is not loaded globally.
+ */
+export function isZoneless(ngZone?: NgZone | null): boolean {
+    if (!ngZone) return true;
+    // Angular provides NoopNgZone when zone-less. The class name check is the
+    // most reliable heuristic because NoopNgZone is not publicly exported.
+    if (ngZone.constructor?.name === 'NoopNgZone') return true;
+    // Fallback: check if Zone.js global is present
+    if (typeof Zone === 'undefined') return true;
+    return false;
+}
+
+/**
+ * Strategy interface for notifying Angular's change detection after store changes.
+ * The library ships two built-in strategies (zone / zoneless) but consumers may
+ * provide their own via the CHANGE_DETECTION_NOTIFIER token.
+ */
+export interface ChangeDetectionNotifier {
+    /** Called after every dispatch to ensure Angular picks up the state change. */
+    notify(): void;
+}
+
+/**
+ * DI token that allows overriding the change-detection notification strategy.
+ * When not provided, NgRedux auto-detects zone vs zoneless and picks the right one.
+ */
+export const CHANGE_DETECTION_NOTIFIER = new InjectionToken<ChangeDetectionNotifier>(
+    'ChangeDetectionNotifier'
+);
+
+/**
+ * Zone-based notifier: ensures dispatch runs inside NgZone so Zone.js patches
+ * trigger change detection automatically.
+ */
+export class ZoneChangeDetectionNotifier implements ChangeDetectionNotifier {
+    constructor(private ngZone: NgZone) {}
+    notify(): void {
+        // In zone mode, change detection is driven by Zone.js.
+        // We only need to enter the zone if we're outside it.
+        // The actual zone.run() wrapping is done at dispatch time.
+    }
+}
+
+/**
+ * Zoneless notifier: calls ApplicationRef.tick() to trigger change detection
+ * without relying on Zone.js.
+ */
+export class ZonelessChangeDetectionNotifier implements ChangeDetectionNotifier {
+    constructor(private appRef: ApplicationRef) {}
+    notify(): void {
+        this.appRef.tick();
+    }
+}
+
+/**
+ * Noop notifier: does not trigger any change detection. Useful when the consumer
+ * handles change detection entirely on their own (e.g. using OnPush + Signals only).
+ */
+export class NoopChangeDetectionNotifier implements ChangeDetectionNotifier {
+    notify(): void {}
+}
 
 /**
  * The NgRedux class is a Redux store implementation that can be used in Angular applications.
@@ -59,16 +123,63 @@ export class NgRedux<RootState = any> extends AbstractStore<any> {
     private _store: Store<RootState, any>;
 
     /**
+     * The change detection notifier used to notify Angular about state changes.
+     * Auto-configured based on zone/zoneless detection, but can be overridden.
+     * @protected
+     */
+    protected _cdNotifier: ChangeDetectionNotifier | null = null;
+
+    /**
+     * Whether the application is running in zoneless mode.
+     * @protected
+     */
+    protected _isZoneless: boolean = false;
+
+    /**
      * Constructor
      *
-     * @ngZone - control angular change detection base on zoneJS api
-     * that intersect async operation like setTimeOut, setInterval, click and many more.
-     * use angular ngzone wrapper allow control change detection trigger.
+     * Accepts optional NgZone and ApplicationRef. Automatically detects zone vs
+     * zoneless mode and sets up the appropriate change detection notification strategy.
+     *
+     * @param ngZone - Angular NgZone (injected automatically, may be NoopNgZone in zoneless apps)
+     * @param appRef - Angular ApplicationRef (used for zoneless change detection)
+     * @param customNotifier - Optional custom ChangeDetectionNotifier override
      */
 
-    constructor(private ngZone?: NgZone) {
+    constructor(
+        @Optional() private ngZone?: NgZone,
+        @Optional() private appRef?: ApplicationRef,
+        @Optional() @Inject(CHANGE_DETECTION_NOTIFIER) customNotifier?: ChangeDetectionNotifier,
+    ) {
         super();
         NgRedux.instance = this;
+        this._isZoneless = isZoneless(ngZone);
+        this._configureCdNotifier(customNotifier);
+    }
+
+    /**
+     * Configure the change detection notifier based on the environment.
+     */
+    private _configureCdNotifier(customNotifier?: ChangeDetectionNotifier | null): void {
+        if (customNotifier) {
+            this._cdNotifier = customNotifier;
+        } else if (this._isZoneless && this.appRef) {
+            this._cdNotifier = new ZonelessChangeDetectionNotifier(this.appRef);
+        } else if (!this._isZoneless && this.ngZone) {
+            this._cdNotifier = new ZoneChangeDetectionNotifier(this.ngZone);
+        } else {
+            this._cdNotifier = new NoopChangeDetectionNotifier();
+        }
+    }
+
+    /**
+     * Allows overriding the change detection notification strategy at runtime.
+     * Useful for transitioning between zone and zoneless, or for testing.
+     *
+     * @param notifier The new change detection notifier to use.
+     */
+    setNotifier(notifier: ChangeDetectionNotifier): void {
+        this._cdNotifier = notifier;
     }
 
     /**
@@ -263,15 +374,26 @@ export class NgRedux<RootState = any> extends AbstractStore<any> {
         }
 
         /**
-         * has been tweaked to always run in the Angular zone.
-         * This should prevent unexpected weirdness when dispatching from callbacks to 3rd-party.
+         * Zone mode: ensures dispatch runs inside Angular zone so that Zone.js
+         * patches trigger change detection automatically.
+         * Zoneless mode: dispatches directly, then notifies Angular's change
+         * detection via ApplicationRef.tick() or custom notifier.
          */
-
-        if (this.ngZone && !NgZone.isInAngularZone()) {
-            return this.ngZone.run(() => this._store!.dispatch(action));
-        } else {
-            return this._store.dispatch(action);
+        if (!this._isZoneless && this.ngZone && !NgZone.isInAngularZone()) {
+            return this.ngZone.run(() => {
+                const result = this._store!.dispatch(action);
+                return result;
+            });
         }
+
+        const result = this._store.dispatch(action);
+
+        // In zoneless mode, explicitly notify change detection after dispatch
+        if (this._isZoneless && this._cdNotifier) {
+            this._cdNotifier.notify();
+        }
+
+        return result;
     }
 
     /**

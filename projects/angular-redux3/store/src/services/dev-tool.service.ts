@@ -2,7 +2,7 @@
  * Import third-party libraries
  */
 
-import { NgZone } from '@angular/core';
+import { NgZone, Optional } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { ApplicationRef } from '@angular/core';
 
@@ -16,7 +16,7 @@ import { Unsubscribe } from 'redux';
  * angular-redux3
  */
 
-import { NgRedux } from './ng-redux.service';
+import { NgRedux, isZoneless } from './ng-redux.service';
 
 /**
  * Declare window const
@@ -41,7 +41,24 @@ export class DevToolsExtension {
      * @param {NgRedux<any>} ngRedux - The Angular Redux service instance.
      */
 
-    constructor(private appRef: ApplicationRef, private ngRedux: NgRedux<any>) {}
+    /**
+     * Whether the app is running in zoneless mode.
+     * @private
+     */
+    private _zoneless: boolean;
+
+    /**
+     * Constructs a new DevToolsExtension object with the given parameters.
+     *
+     * @constructor
+     * @param {ApplicationRef} appRef - The application reference object.
+     * @param {NgRedux<any>} ngRedux - The Angular Redux service instance.
+     * @param {NgZone} [ngZone] - Optional NgZone to detect zone/zoneless mode.
+     */
+
+    constructor(private appRef: ApplicationRef, private ngRedux: NgRedux<any>, @Optional() ngZone?: NgZone) {
+        this._zoneless = isZoneless(ngZone);
+    }
 
     /**
      * Returns true if the extension is installed and enabled.
@@ -55,6 +72,10 @@ export class DevToolsExtension {
      * A wrapper for the browser Extension `Redux DevTools`.
      * Makes sure state changes triggered by the extension
      * trigger Angular change detector.
+     *
+     * Works in both zone and zoneless modes:
+     * - Zone mode: only calls tick() when outside Angular zone (to avoid double-tick).
+     * - Zoneless mode: always calls tick() since Zone.js isn't driving CD.
      *
      * @example
      * ```typescript
@@ -92,13 +113,16 @@ export class DevToolsExtension {
         }
 
         let subscription: Unsubscribe;
+        const zoneless = this._zoneless;
 
         // Make sure changes from dev tools update angular views.
         environment['__REDUX_DEVTOOLS_EXTENSION__'].listen(({ type }: any) => {
             if (type === 'START') {
                 subscription = this.ngRedux.subscribe(() => {
-                    if (!NgZone.isInAngularZone()) {
-                        this.appRef.tick(); // Trigger change detection from redux_devtool change.
+                    // In zoneless mode, always tick since Zone.js won't trigger CD.
+                    // In zone mode, only tick when outside Angular zone to avoid double-tick.
+                    if (zoneless || !NgZone.isInAngularZone()) {
+                        this.appRef.tick();
                     }
                 });
             } else if (type === 'STOP') {

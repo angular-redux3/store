@@ -74,6 +74,11 @@ export class SubStoreService<State> extends AbstractStore<State> {
 
         this.hashReducer = this.reducerService.hashSignature(localReducer.toString());
         this.reducerService.registerSubReducer(this.hashReducer, localReducer);
+
+        // Initialize subscription so _store$ emits values immediately
+        this.subscription = this.rootStore.select<State>(this.basePath).subscribe((value: any) => {
+            this._store$.next(value);
+        });
     }
 
     /**
@@ -236,5 +241,26 @@ export class SubStoreService<State> extends AbstractStore<State> {
 
     replaceReducer(nextLocalReducer: Reducer<State>) {
         return this.reducerService.replaceSubReducer(this.hashReducer, nextLocalReducer);
+    }
+
+    /**
+     * Cleans up the sub-store by unsubscribing from state updates and
+     * unregistering the sub-reducer. Call this when the component or
+     * module using this sub-store is destroyed to prevent memory leaks.
+     *
+     * @example
+     * ```typescript
+     * ngOnDestroy() {
+     *   this.subStore.destroy();
+     * }
+     * ```
+     */
+
+    destroy(): void {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+        this.reducerService.unregisterSubReducer(this.hashReducer);
+        this._store$.complete();
     }
 }
