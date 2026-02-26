@@ -87,7 +87,7 @@ export function enableHmr<RootState>(
     store: NgRedux<RootState>,
     hmrModule?: any
 ): void {
-    const mod = hmrModule || (typeof module !== 'undefined' ? module : undefined);
+    const mod = hmrModule || (typeof (globalThis as any)['module'] !== 'undefined' ? (globalThis as any)['module'] : undefined);
 
     if (mod?.hot) {
         mod.hot.dispose(() => {

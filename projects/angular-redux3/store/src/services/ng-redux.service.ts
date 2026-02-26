@@ -37,7 +37,7 @@ export function isZoneless(ngZone?: NgZone | null): boolean {
     // most reliable heuristic because NoopNgZone is not publicly exported.
     if (ngZone.constructor?.name === 'NoopNgZone') return true;
     // Fallback: check if Zone.js global is present
-    if (typeof Zone === 'undefined') return true;
+    if (typeof (globalThis as any)['Zone'] === 'undefined') return true;
     return false;
 }
 

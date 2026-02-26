@@ -51,7 +51,7 @@ export class TestNgRedux<RootState> extends NgRedux<RootState> {
 
     constructor(reducer: Reducer<RootState>, initialState: RootState) {
         super(undefined, undefined, undefined); // No NgZone/ApplicationRef needed for tests
-        this._internalStore = createStore(reducer, initialState);
+        this._internalStore = createStore(reducer, initialState as any);
         this.configureStore(reducer, initialState);
     }
 
